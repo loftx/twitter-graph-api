@@ -1,7 +1,7 @@
 const twitterGraphApi = require('./index');
 
 describe('index.js', () => {
-  /* test('Check getAuthGuestId', async () => {
+  test('Check getAuthGuestId', async () => {
     const twitter = new twitterGraphApi();
     const guestId = await twitter.getAuthGuestId();
 
@@ -18,7 +18,7 @@ describe('index.js', () => {
     console.log(guestToken);
     expect(guestToken).toMatch(/^\d+$/);
 
-  }); */
+  });
 
   test('Check getUserTweets', async () => {
 
@@ -33,12 +33,13 @@ describe('index.js', () => {
 
     console.log(result);
 
-    /* expect(result).toHaveProperty('data');
-    expect(result.data).toHaveProperty('me');
-    expect(result.data.me).toHaveProperty('personalizedFeed');
-    expect(result.data.me.personalizedFeed).toHaveProperty('feedItems');
+    expect(result).toHaveProperty('data');
+    expect(result.data).toHaveProperty('user');
+    expect(result.data.user).toHaveProperty('result');
+    expect(result.data.user.result).toHaveProperty('timeline_v2');
+    expect(result.data.user.result.timeline_v2).toHaveProperty('timeline');
 
-    console.log(result.data.me.personalizedFeed.feedItems); */
+    // TODO: Check for actual tweets
 
   });
 });

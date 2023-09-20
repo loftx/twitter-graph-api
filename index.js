@@ -1,12 +1,12 @@
 module.exports = class TwitterGraphApi {
 
-  constructor(bearerToken) {
+  constructor() {
     this.twitterUrl = 'https://twitter.com/';
     this.twitterApiUrl = 'https://twitter.com/i/api/graphql/WzJjibAcDa-oCjCcLOotcg/';
 
-    this.guestId = '';
-    this.guestToken = '';
-    this.bearerToken = bearerToken;
+    this.csfrToken = '';
+    this.cookie = '';
+    this.bearerToken = '';
 
     this.defaultVariables = {
       "count": 40,
@@ -43,20 +43,20 @@ module.exports = class TwitterGraphApi {
 
   }
 
-  getGuestId() {
-    return this.guestId;
+  setCsrfToken(csfrToken) {
+    this.csfrToken = csfrToken;
   }
 
-  setGuestId(guestId) {
-    this.guestId = guestId;
+  getCsrfToken() {
+    return this.csfrToken;
   }
 
-  setGuestToken(guestToken) {
-    this.guestToken = guestToken;
+  setCookie(cookie) {
+    this.cookie = cookie;
   }
 
-  getGuestToken() {
-    return this.guestToken;
+  getCookie() {
+    return this.cookie;
   }
 
   setBearerToken(bearerToken) {
@@ -67,71 +67,6 @@ module.exports = class TwitterGraphApi {
     return this.bearerToken;
   }
 
-  async getAuthGuestId() {
-    const axios = require('axios');
-
-    // twitter will try and redirect for the cookie - don't allow it and just get the response
-    const axiosOptions = {
-      maxRedirects: 0
-    }
-
-    try {
-      const response = await axios.get(this.twitterUrl, axiosOptions);
-    } catch (error) {
-
-      // error is thrown as it's a redirect so catch it and continue
-      
-      // TODO: check for existance of cookies
-      const cookieHeader = error.response.headers['set-cookie'][0];
-
-      const cookies = cookieHeader.split(/;\s*/).reduce((dict, cookie) => {
-        const [key, value] = cookie.split('=');
-        dict[key] = value;
-        return dict;
-      }, {});
-
-      // TODO: check for existance of guest_id
-
-      // TODO: check guestId is in form v1=xxxx after decoding
-
-      const guestId = cookies['guest_id'].substring(5);
-
-      return guestId;
-
-    }
-
-    throw 'Shouldn\'t happen';
-
-  }
-
-  async getAuthGuestToken(guestId) {
-    const axios = require('axios');
-
-    const axiosOptions = {
-      headers: {
-        'Cookie': 'guest_id=v1%3A' + guestId
-      }
-    }
-
-    var response = '';
-
-    try {
-      response = await axios.get(this.twitterUrl, axiosOptions);
-    } catch (error) {
-      // TODO: sort out errors
-      throw new Error(error);
-    }
-
-    const matches = response.data.match(/gt=([0-9]+)/);
-    if (matches && matches.length > 1) {
-      return matches[1];
-    } else {
-      // TODO: sort out errors
-      throw new Error('No match found.');
-    }
-
-  }
-
   async getUserTweets(userId, variables, features) {
 
     // check requirements
@@ -139,8 +74,12 @@ module.exports = class TwitterGraphApi {
       throw new Error('Bearer Token is not set.');
     }
 
-    if (!this.getGuestToken()) {
-      throw new Error('Guest Token is not set.');
+    if (!this.getCsrfToken()) {
+      throw new Error('CSRF token is not set.');
+    }
+
+    if (!this.getCookie()) {
+      throw new Error('Cookie is not set.');
     }
 
     const mergedVariables = Object.assign({}, this.defaultVariables, variables);
@@ -155,8 +94,9 @@ module.exports = class TwitterGraphApi {
 
     const axiosOptions = {
       headers: {
-        'x-guest-token': this.getGuestToken(),
-        'Authorization': 'Bearer ' + this.getBearerToken()
+        'x-csrf-token': this.getCsrfToken(),  
+        'authorization': 'Bearer ' + this.getBearerToken(),
+        'Cookie': this.getCookie()
       }
     };
 

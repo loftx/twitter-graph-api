@@ -1,33 +1,13 @@
 const twitterGraphApi = require('./index');
 
 describe('index.js', () => {
-  test('Check getAuthGuestId', async () => {
-    const twitter = new twitterGraphApi();
-    const guestId = await twitter.getAuthGuestId();
-
-    console.log(guestId);
-    expect(guestId).toMatch(/^\d+$/);
-
-  });
-
-  test('Check getAuthGuestToken', async () => {
-    const twitter = new twitterGraphApi();
-    const guestId = await twitter.getAuthGuestId();
-    const guestToken = await twitter.getAuthGuestToken(guestId);
-
-    console.log(guestToken);
-    expect(guestToken).toMatch(/^\d+$/);
-
-  });
-
   test('Check getUserTweets', async () => {
 
-    const twitter = new twitterGraphApi(
-      process.env.TWITTER_BEARER_TOKEN
-    );
+    const twitter = new twitterGraphApi();
 
-    twitter.setGuestId(await twitter.getAuthGuestId());
-    twitter.setGuestToken(await twitter.getAuthGuestToken(twitter.getGuestId()));
+    twitter.setCsrfToken(process.env.TWITTER_CSRF_TOKEN);
+    twitter.setBearerToken(process.env.TWITTER_BEARER_TOKEN);
+    twitter.setCookie(process.env.TWITTER_COOKIE);
 
     const result = await twitter.getUserTweets(process.env.TWITTER_USER_ID);
 

@@ -2,18 +2,20 @@
 
 A very basic node module to interact with the internal Twitter Graph API (i.e. the one used on the Twitter web site at <https://twitter.com/>) not the publically available API at <https://developer.twitter.com>/
 
-It currently authenticates as a guest, and allows a list of Tweets to be returned for a userID, but could be extended to make use of other guest APIs.
+Due to changes, version 2.0.0 no longer allows guest authentiction, but requires specific credentials to be set.
+
 
 ## Usage 
 
-Create the API instance with a Bearer token - this is the one Twitter uses for guests
+Create the API instance
 
-`const twitter = new twitterGraphApi('AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA');`
+`const twitter = new twitterGraphApi();`
 
-Obtain a Guest ID and Guest Auth token required for making Graph API calls
+Obtain a CSRF token, Cookie and Barer token - these can be grabbed from a the XHR request starting  https://twitter.com/i/api/graphql/H8OOoI-5ZE4NxgRr8lfyWg/UserTweets as a logged in user.
 
-`twitter.setGuestId(await twitter.getAuthGuestId());`
-`twitter.setGuestToken(await twitter.getAuthGuestToken(twitter.getGuestId()));`
+`twitter.setCsrfToken(...);
+twitter.setBearerToken(...);
+twitter.setCookie(...);`
 
 Call getUserTweets with a twitter UserID (the numeric ID not the username)
 

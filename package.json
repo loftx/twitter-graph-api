@@ -1,6 +1,6 @@
 {
   "name": "@loftx/twitter-graph-api",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A very basic node module to interact with the internal Twitter Graph API",
   "main": "index.js",
   "scripts": {
